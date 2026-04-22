@@ -1,0 +1,308 @@
+/* ===========================
+   CALC-9000 — Retro Futuristic
+   =========================== */
+
+:root {
+  --bg:         #0a0c10;
+  --panel:      #12161e;
+  --panel-edge: #1e2533;
+  --neon:       #00f5c4;
+  --neon-dim:   #00c49a55;
+  --neon-glow:  #00f5c455;
+  --orange:     #ff6b35;
+  --orange-dim: #ff6b3522;
+  --text-main:  #e8f4f0;
+  --text-dim:   #4a6070;
+  --btn-num-bg: #1a2030;
+  --btn-num-hover: #222d40;
+  --btn-func-bg: #1e2840;
+  --radius:     14px;
+  --font-display: 'Share Tech Mono', monospace;
+  --font-brand:   'Orbitron', sans-serif;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  min-height: 100vh;
+  background: var(--bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  overflow: hidden;
+}
+
+/* Animated grid background */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(0,245,196,.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,245,196,.04) 1px, transparent 1px);
+  background-size: 40px 40px;
+  pointer-events: none;
+  z-index: 0;
+  animation: gridDrift 20s linear infinite;
+}
+
+@keyframes gridDrift {
+  0%   { background-position: 0 0; }
+  100% { background-position: 40px 40px; }
+}
+
+/* Radial glow behind calculator */
+.scene {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.scene::before {
+  content: '';
+  position: absolute;
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, var(--neon-glow) 0%, transparent 70%);
+  pointer-events: none;
+  animation: pulse 4s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: .5; transform: scale(1); }
+  50%       { opacity: 1; transform: scale(1.1); }
+}
+
+/* ---- CALCULATOR SHELL ---- */
+.calculator {
+  position: relative;
+  width: 320px;
+  background: var(--panel);
+  border-radius: 24px;
+  padding: 24px 20px 20px;
+  border: 1px solid var(--panel-edge);
+  box-shadow:
+    0 0 0 1px #ffffff08,
+    0 30px 80px #000000cc,
+    0 0 60px var(--neon-glow),
+    inset 0 1px 0 #ffffff12;
+}
+
+/* Screws */
+.calculator::before,
+.calculator::after {
+  content: '⊕';
+  position: absolute;
+  font-size: 10px;
+  color: var(--text-dim);
+  top: 12px;
+}
+.calculator::before { left: 14px; }
+.calculator::after  { right: 14px; }
+
+/* ---- BRAND ---- */
+.brand {
+  font-family: var(--font-brand);
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: 4px;
+  color: var(--neon);
+  text-align: center;
+  margin-bottom: 16px;
+  opacity: .7;
+  text-shadow: 0 0 10px var(--neon);
+}
+
+/* ---- DISPLAY ---- */
+.display-wrapper {
+  position: relative;
+  margin-bottom: 20px;
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.display-glow {
+  position: absolute;
+  inset: 0;
+  border-radius: var(--radius);
+  border: 1px solid var(--neon-dim);
+  box-shadow: 0 0 20px var(--neon-glow), inset 0 0 20px #00000044;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.display {
+  background: #060a0c;
+  border-radius: var(--radius);
+  padding: 14px 18px 10px;
+  min-height: 88px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: flex-end;
+  gap: 4px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Scanline effect */
+.display::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 3px,
+    rgba(0,0,0,.12) 3px,
+    rgba(0,0,0,.12) 4px
+  );
+  pointer-events: none;
+}
+
+.display-expression {
+  font-family: var(--font-display);
+  font-size: 12px;
+  color: var(--text-dim);
+  min-height: 16px;
+  letter-spacing: 1px;
+}
+
+.display-value {
+  font-family: var(--font-display);
+  font-size: 38px;
+  color: var(--neon);
+  text-shadow: 0 0 16px var(--neon), 0 0 30px var(--neon-dim);
+  letter-spacing: 2px;
+  word-break: break-all;
+  text-align: right;
+  line-height: 1.1;
+  transition: color .1s;
+}
+
+.display-value.flash {
+  color: #fff;
+  text-shadow: 0 0 20px #fff;
+}
+
+/* ---- BUTTONS ---- */
+.buttons {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+}
+
+.btn {
+  position: relative;
+  height: 62px;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  font-family: var(--font-display);
+  font-size: 20px;
+  letter-spacing: 1px;
+  transition: transform .08s, box-shadow .08s, background .1s;
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
+  overflow: hidden;
+}
+
+/* Shimmer on hover */
+.btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, #ffffff14 0%, transparent 60%);
+  opacity: 0;
+  transition: opacity .15s;
+  border-radius: inherit;
+}
+.btn:hover::before { opacity: 1; }
+
+.btn:active {
+  transform: scale(.93);
+}
+
+/* Number buttons */
+.btn-num {
+  background: var(--btn-num-bg);
+  color: var(--text-main);
+  border: 1px solid #2a3545;
+  box-shadow: 0 4px 0 #0d1118, 0 2px 8px #00000055;
+}
+.btn-num:hover {
+  background: var(--btn-num-hover);
+  box-shadow: 0 4px 0 #0d1118, 0 0 12px #00f5c418;
+}
+.btn-num:active {
+  box-shadow: 0 1px 0 #0d1118;
+}
+
+/* Function buttons (AC, +/−, %) */
+.btn-func {
+  background: var(--btn-func-bg);
+  color: var(--neon);
+  border: 1px solid var(--neon-dim);
+  font-size: 15px;
+  box-shadow: 0 4px 0 #0a1020, 0 0 10px var(--neon-glow);
+  text-shadow: 0 0 8px var(--neon);
+}
+.btn-func:hover {
+  background: #253050;
+  box-shadow: 0 4px 0 #0a1020, 0 0 20px var(--neon-glow);
+}
+
+/* Operator buttons */
+.btn-op {
+  background: linear-gradient(145deg, #ff7a45, #e5501a);
+  color: #fff;
+  border: 1px solid #ff9055;
+  font-size: 24px;
+  box-shadow: 0 4px 0 #992200, 0 2px 12px #ff6b3544;
+  text-shadow: 0 1px 2px #00000055;
+}
+.btn-op:hover {
+  background: linear-gradient(145deg, #ff9055, #ff6b35);
+  box-shadow: 0 4px 0 #992200, 0 0 20px #ff6b3566;
+}
+.btn-op:active {
+  box-shadow: 0 1px 0 #992200;
+}
+.btn-op.active {
+  background: #fff;
+  color: var(--orange);
+  box-shadow: 0 4px 0 #aaa, 0 0 20px #ffffffaa;
+}
+
+/* Equals */
+.btn-equals {
+  background: linear-gradient(145deg, #00f5c4, #00c49a);
+  color: #060a0c;
+  border: 1px solid #00ffcc;
+  font-size: 28px;
+  box-shadow: 0 4px 0 #007755, 0 0 20px var(--neon-glow);
+}
+.btn-equals:hover {
+  background: linear-gradient(145deg, #20ffda, #00e0b0);
+  box-shadow: 0 4px 0 #007755, 0 0 30px var(--neon);
+}
+.btn-equals:active {
+  box-shadow: 0 1px 0 #007755;
+}
+
+/* Zero button — spans 2 columns */
+.btn-zero {
+  grid-column: span 2;
+  text-align: left;
+  padding-left: 22px;
+}
+
+/* ---- RESPONSIVE ---- */
+@media (max-width: 380px) {
+  .calculator { width: 290px; padding: 20px 16px 16px; }
+  .btn        { height: 54px; font-size: 18px; }
+  .display-value { font-size: 32px; }
+}

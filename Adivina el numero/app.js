@@ -21,3 +21,5 @@ if (adivinado == true) {
 } else {
     console.log("El numero era " + numeroSecreto)
 }
+
+//crea una funcion para volver a repetirlo
